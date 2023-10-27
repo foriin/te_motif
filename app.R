@@ -2,10 +2,11 @@ library(shiny)
 library(ggplot2)
 library(dplyr)
 
-load(url("https://share.genome.au.dk/TDJJz1KXviI/te_ins_hier_te_mots.RData"))
+load(url("https://share.genome.au.dk/DdpQDYTVMqg/te_ins_hier_te_mots.RData"))
 te_hier <- te.hier.counts %>% mutate(TE_fam = sub("_", "-", Alias))
 te_mots_kds_te <- merge(te_mots_kds_te, te_hier, by = "TE_fam")
-
+te_mots_kds_te$KD <- factor(te_mots_kds_te$KD)
+levels(te_mots_kds_te$KD) <- c("Treatment 1", "Treatment 2", "Treatment 3")
 # Define UI for application
 ui <- fluidPage(
   # Application title
@@ -209,14 +210,14 @@ server <- function(input, output, session) {
                                          )) 
     }
     
-    print(head(data))
     # Generate the plot
     ggplot(data, aes(x = Motif_start, fill = KD)) +
       geom_histogram(binwidth = 1) +
       facet_wrap(~Motif) +
       xlim(c(-40, 40))+
       theme_bw()+
-      theme(text = element_text(size = 20))
+      theme(text = element_text(size = 20))+
+      labs(fill = "Condition")
   })
 }
 
